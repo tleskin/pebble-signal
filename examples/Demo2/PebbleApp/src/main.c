@@ -55,7 +55,7 @@ static void prv_notified(SmartstrapAttribute *attribute) {
 }
 
 
-static void prv_set_led_attribute(bool on) {
+static void prv_set_led_attribute(int pin) {
   SmartstrapResult result;
   uint8_t *buffer;
   size_t length;
@@ -65,7 +65,7 @@ static void prv_set_led_attribute(bool on) {
     return;
   }
 
-  buffer[0] = on;
+  buffer[0] = pin;
 
   result = smartstrap_attribute_end_write(led_attribute, 1, false);
   if (result != SmartstrapResultOk) {
@@ -76,15 +76,23 @@ static void prv_set_led_attribute(bool on) {
 
 
 static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
-  prv_set_led_attribute(true);
+  // int array[2] = {23, 21, 22};
+  prv_set_led_attribute(23);
+}
+
+static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
+  // int array[2] = {22, 21, 23};
+  prv_set_led_attribute(21);
 }
 
 static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
-  prv_set_led_attribute(false);
+  // int array[2] = {21, 22, 23};
+  prv_set_led_attribute(22);
 }
 
 static void click_config_provider(void *context) {
   window_single_click_subscribe(BUTTON_ID_UP, up_click_handler);
+  window_single_click_subscribe(BUTTON_ID_SELECT, select_click_handler);
   window_single_click_subscribe(BUTTON_ID_DOWN, down_click_handler);
 }
 
