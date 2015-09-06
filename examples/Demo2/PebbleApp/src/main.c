@@ -20,8 +20,9 @@ static void prv_availability_changed(SmartstrapServiceId service_id, bool availa
   }
 
   if (available) {
-    text_layer_set_background_color(status_text_layer, GColorGreen);
-    text_layer_set_text(status_text_layer, "Connected!");
+    text_layer_set_background_color(status_text_layer, GColorBlue);
+    text_layer_set_text_color(status_text_layer, GColorWhite);
+    text_layer_set_text(status_text_layer, "TurnAKit");
   } else {
     text_layer_set_background_color(status_text_layer, GColorRed);
     text_layer_set_text(status_text_layer, "Disconnected!");
@@ -44,7 +45,7 @@ static void prv_did_read(SmartstrapAttribute *attr, SmartstrapResult result,
 
   static char uptime_buffer[20];
   snprintf(uptime_buffer, 20, "%u", (unsigned int)*(uint32_t *)data);
-  text_layer_set_text(uptime_text_layer, uptime_buffer);
+  text_layer_set_text(uptime_text_layer, "Left or Right");
 }
 
 static void prv_notified(SmartstrapAttribute *attribute) {
@@ -74,6 +75,31 @@ static void prv_set_led_attribute(int pin) {
   }
 }
 
+static void tap_handler(AccelAxisType axis, int32_t direction) {
+  switch (axis) {
+    case ACCEL_AXIS_X:
+      if (direction > 0) {
+        prv_set_led_attribute(23);
+      } else {
+        prv_set_led_attribute(23);
+      }
+      break;
+    case ACCEL_AXIS_Y:
+      if (direction > 0) {
+        prv_set_led_attribute(22);
+      } else {
+        prv_set_led_attribute(22);
+      }
+      break;
+    case ACCEL_AXIS_Z:
+      if (direction > 0) {
+        prv_set_led_attribute(21);
+      } else {
+        prv_set_led_attribute(21);
+      }
+      break;
+    }
+}
 
 static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
   // int array[2] = {23, 21, 22};
@@ -137,9 +163,11 @@ static void init(void) {
     .notified = prv_notified
   };
   smartstrap_subscribe(handlers);
+  accel_tap_service_subscribe(tap_handler);
   led_attribute = smartstrap_attribute_create(SERVICE_ID, LED_ATTRIBUTE_ID, LED_ATTRIBUTE_LENGTH);
   uptime_attribute = smartstrap_attribute_create(SERVICE_ID, UPTIME_ATTRIBUTE_ID,
                                                  UPTIME_ATTRIBUTE_LENGTH);
+
 }
 
 static void deinit(void) {

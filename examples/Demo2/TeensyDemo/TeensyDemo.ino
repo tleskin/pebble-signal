@@ -14,7 +14,8 @@ static uint8_t buffer[GET_PAYLOAD_BUFFER_SIZE(4)];
 
 
 void setup() {
-  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(23, OUTPUT);
+  pinMode(22, OUTPUT);
 #if defined(__MK20DX256__) || defined(__MK20DX128__)
   // Teensy 3.0/3.1 uses hardware serial mode (pins 0/1) with RX/TX shorted together
   ArduinoPebbleSerial::begin_hardware(buffer, sizeof(buffer), Baud57600, SERVICES, NUM_SERVICES);
@@ -46,7 +47,15 @@ void handle_led_request(RequestType type, size_t length) {
     return;
   }
   // set the LED
-  digitalWrite(LED_BUILTIN, (bool) buffer[0]);
+  digitalWrite(21, LOW);
+  digitalWrite(22, LOW);
+  digitalWrite(23, LOW);
+  digitalWrite(buffer[0], HIGH);
+
+
+//  digitalWrite(buffer[0], LOW);
+//  digitalWrite(buffer[0], LOW);
+
   // ACK that the write request was received
   ArduinoPebbleSerial::write(true, NULL, 0);
 }
